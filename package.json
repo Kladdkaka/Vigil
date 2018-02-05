@@ -13,6 +13,7 @@
   },
   "homepage": "https://github.com/Kladdkaka/Vigil#readme",
   "dependencies": {
+    "axios": "^0.17.1",
     "require-dir": "^0.3.2"
   },
   "devDependencies": {
