@@ -2,35 +2,36 @@ const axios = require('axios').create({
   baseURL: 'https://omni-content.omni.news/'
 })
 
-const extract = key => object => object[key]
-const filterByValue = (key, value) => array => array.filter(object => object[key] === value)
-const log = obj => console.log(obj) || obj
-const logLength = array => console.log(array.length) || array
-const filter = func => array => array.filter(func)
+const get = async () => {
+  let res
 
-const extractFromArray = ([obj]) => obj
+  try {
+    res = await axios({
+      method: 'get',
+      url: 'articles',
+      params: {
+        articles: 'latest',
+        limit: 20
+      }
+    })
+  } catch (error) {
+    throw error
+  }
 
-const get = () => {
-  return axios({
-    method: 'get',
-    url: 'articles',
-    params: {
-      articles: 'latest',
-      limit: 20
-    }
-  })
-        .then(extract('data'))
-        .then(extract('articles'))
-        .then(filterByValue('length', 1))
-        .then(extractFromArray)
-        .then(log)
-        .then(logLength)
-        .then(filterByValue('type', 'Article'))
-        .then(logLength)
-        .then(({ articles }) => articles.map(article => ({
-          title: article.title.value,
-          provider: 'omni'
-        })))
+  const { data } = res
+
+  const articles = data.articles
+    .filter(list => list.length === 1)
+    .map(([article]) => article)
+    .filter(article => article.type === 'Article')
+    .map(article => ({
+      title: article.title.value,
+      url: `https://omni.se/a/${article.article_id}`,
+      date: new Date(article.changes.published),
+      provider: 'Omni'
+    }))
+
+  return articles
 }
 
 module.exports = {
