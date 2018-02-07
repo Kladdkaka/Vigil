@@ -3,20 +3,14 @@ const axios = require('axios').create({
 })
 
 const get = async () => {
-  let res
-
-  try {
-    res = await axios({
-      method: 'get',
-      url: 'articles',
-      params: {
-        articles: 'latest',
-        limit: 20
-      }
-    })
-  } catch (error) {
-    throw error
-  }
+  const res = await axios({
+    method: 'get',
+    url: 'articles',
+    params: {
+      articles: 'latest',
+      limit: 20
+    }
+  })
 
   const { data } = res
 
