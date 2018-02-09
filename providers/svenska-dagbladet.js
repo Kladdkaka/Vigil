@@ -25,7 +25,7 @@ const get = async () => {
       title: item.title[0],
       url: item.link[0],
       date: new Date(item.pubDate[0]),
-      provider: 'SvD'
+      provider: 'Svenska Dagbladet'
     }))
 
   return articles
