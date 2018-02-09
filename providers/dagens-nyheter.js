@@ -1,5 +1,5 @@
 const axios = require('axios').create({
-  baseURL: 'https://www.svd.se/'
+  baseURL: 'https://www.dn.se/'
 })
 
 const xml2js = require('xml2js')
@@ -12,7 +12,7 @@ const parseXML = data => new Promise((resolve, reject) => { // I have no idea wh
 })
 
 const get = async () => {
-  const res = await axios.get('feed/articles.rss')
+  const res = await axios.get('nyheter/m/rss/')
 
   const { data } = res
 
@@ -25,7 +25,7 @@ const get = async () => {
       title: item.title[0],
       url: item.link[0],
       date: new Date(item.pubDate[0]),
-      provider: 'SvD'
+      provider: 'Dagens Nyheter'
     }))
 
   return articles
