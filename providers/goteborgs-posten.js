@@ -2,6 +2,7 @@ const axios = require('axios').create({
   baseURL: 'http://www.gp.se/'
 })
 
+const moment = require('moment-timezone')
 const cheerio = require('cheerio')
 const xml2js = require('xml2js')
 
@@ -11,8 +12,6 @@ const parseXML = data => new Promise((resolve, reject) => { // I have no idea wh
     else resolve(result)
   })
 })
-
-const monthNames = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
 
 const getDateForArticle = async url => {
   const res = await axios.get(url)
@@ -24,14 +23,9 @@ const getDateForArticle = async url => {
     throw new Error('Premium article.')
   }
 
-  const dateString = $('time').text().trim().replace(/, | - |:/g, ' ')
-  let [hours, minutes, days, month, year] = dateString.split(' ')
+  const dateString = $('time').text().trim()
 
-  month = monthNames.indexOf(month);
-
-  [hours, minutes, days, month, year] = [hours, minutes, days, month, year].map(x => +x)
-
-  console.log(hours, minutes, days, month, year)
+  return moment.tz(dateString, 'HH:mm - DD MMM, YYYY', 'Europe/Stockholm').toDate()
 }
 
 const get = async () => {
@@ -42,12 +36,20 @@ const get = async () => {
 
   let articles = []
 
-  console.log(items[0])
-
   for (const item of items) { // Online = paywall? Newspilot = outhouse content? time can be wrong. TT = TT (time could be wrong but probably not a problem), Writer = inhouse
-    if (item.sources[0].source[0] === 'Newspilot') { // probably only one writer
+    let date
 
+    if (item.sources && item.sources[0].source[0] === 'Newspilot') { // probably only one writer
+      console.log(item.link[0])
+      date = await getDateForArticle(item.link[0])
     }
+
+    articles.push({
+      title: item.title[0],
+      url: item.link[0],
+      date: date || new Date(item.pubDate[0]),
+      provider: 'Göteborgs-Posten'
+    })
   }
 
   return articles
