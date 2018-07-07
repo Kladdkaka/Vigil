@@ -2,9 +2,7 @@ const moment = require('moment')
 
 const providers = require('./providers')
 
-const p = Object.values(providers).map(
-  factory => console.log(factory) || factory().get()
-)
+const p = Object.values(providers).map(factory => factory().get())
 
 Promise.all(p)
   .then(results => [].concat(...results))
@@ -15,7 +13,7 @@ Promise.all(p)
   .then(news =>
     news.forEach(article =>
       console.log(
-                      `${article.title} | ${article.provider} | ${article.date.fromNow()}`
+        `${article.title} | ${article.provider} | ${article.date.fromNow()}`
       )
     )
   )
