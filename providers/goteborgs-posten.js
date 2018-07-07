@@ -5,6 +5,13 @@ const cheerio = require('cheerio')
 
 const { parseXML } = require('../utils')
 
+class PremiumArticleError extends Error {
+  constructor(...args) {
+    super(...args)
+    this.name = this.constructor.name
+  }
+}
+
 class GPScraper extends Scraper {
   constructor() {
     super()
@@ -19,7 +26,7 @@ class GPScraper extends Scraper {
     const isPremium = $('article.premium.no-access').length > 0
 
     if (isPremium) {
-      throw new Error('Premium article.')
+      throw new PremiumArticleError('Premium article.')
     }
 
     const dateString = $('time')
@@ -45,8 +52,18 @@ class GPScraper extends Scraper {
 
       if (item.sources && item.sources[0].source[0] === 'Newspilot') {
         // probably only one writer
-        console.log(item.link[0])
-        date = await this.getDateForArticle(item.link[0])
+        // console.log(item.link[0])
+        // add debug message thingie?
+        try {
+          date = await this.getDateForArticle(item.link[0])
+        } catch (error) {
+          if (error.name === 'PremiumArticleError') {
+            // would instanceof work instead as intended?
+            continue
+          } else {
+            throw error
+          }
+        }
       }
 
       articles.push({
