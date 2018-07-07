@@ -1,60 +1,58 @@
-const axios = require('axios').create({
-  baseURL: 'http://www.gp.se/'
-})
+const { Scraper } = require('../classes')
 
 const moment = require('moment-timezone')
 const cheerio = require('cheerio')
-const xml2js = require('xml2js')
 
-const parseXML = data => new Promise((resolve, reject) => { // I have no idea why xml2js is async...
-  xml2js.parseString(data, (error, result) => {
-    if (error) reject(error)
-    else resolve(result)
-  })
-})
+const { parseXML } = require('../utils')
 
-const getDateForArticle = async url => {
-  const res = await axios.get(url)
-  const $ = cheerio.load(res.data)
+class GPScraper extends Scraper {
+  constructor () {
+    super()
 
-  const isPremium = $('article.premium.no-access').length > 0
-
-  if (isPremium) {
-    throw new Error('Premium article.')
+    this.provider = 'Göteborgs-Posten'
   }
 
-  const dateString = $('time').text().trim()
+  async getDateForArticle (url) {
+    const res = await this.axios.get(url)
+    const $ = cheerio.load(res.data)
 
-  return moment.tz(dateString, 'HH:mm - DD MMM, YYYY', 'Europe/Stockholm').toDate()
-}
+    const isPremium = $('article.premium.no-access').length > 0
 
-const get = async () => {
-  const res = await axios.get('?rss')
-  const xml = await parseXML(res.data)
-
-  const items = xml.rss.channel[0].item
-
-  let articles = []
-
-  for (const item of items) { // Online = paywall? Newspilot = outhouse content? time can be wrong. TT = TT (time could be wrong but probably not a problem), Writer = inhouse
-    let date
-
-    if (item.sources && item.sources[0].source[0] === 'Newspilot') { // probably only one writer
-      console.log(item.link[0])
-      date = await getDateForArticle(item.link[0])
+    if (isPremium) {
+      throw new Error('Premium article.')
     }
 
-    articles.push({
-      title: item.title[0],
-      url: item.link[0],
-      date: date || new Date(item.pubDate[0]),
-      provider: 'Göteborgs-Posten'
-    })
+    const dateString = $('time').text().trim()
+
+    return moment.tz(dateString, 'HH:mm - DD MMM, YYYY', 'Europe/Stockholm').toDate()
   }
 
-  return articles
+  async get () {
+    const res = await this.axios.get('http://www.gp.se/?rss')
+    const xml = await parseXML(res.data)
+
+    const items = xml.rss.channel[0].item
+
+    let articles = []
+
+    for (const item of items) { // Online = paywall? Newspilot = outhouse content? time can be wrong. TT = TT (time could be wrong but probably not a problem), Writer = inhouse
+      let date
+
+      if (item.sources && item.sources[0].source[0] === 'Newspilot') { // probably only one writer
+        console.log(item.link[0])
+        date = await this.getDateForArticle(item.link[0])
+      }
+
+      articles.push({
+        title: item.title[0],
+        url: item.link[0],
+        date: date || new Date(item.pubDate[0]),
+        provider: this.provider
+      })
+    }
+
+    return articles
+  }
 }
 
-module.exports = {
-  get
-}
+module.exports = () => new GPScraper()

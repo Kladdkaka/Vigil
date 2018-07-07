@@ -1,20 +1,23 @@
-const axios = require('axios').create({
-  baseURL: 'https://omni-content.omni.news/'
-})
+const { Scraper } = require('../classes')
 
-const get = async () => {
-  const res = await axios({
-    method: 'get',
-    url: 'articles',
-    params: {
-      articles: 'latest',
-      limit: 20
-    }
-  })
+class OmniScraper extends Scraper {
+  constructor () {
+    super()
 
-  const { data } = res
+    this.provider = 'Omni'
+  }
 
-  const articles = data.articles
+  async get () {
+    const res = await this.axios.get('https://omni-content.omni.news/articles', {
+      params: {
+        articles: 'latest',
+        limit: 20
+      }
+    })
+
+    const { data } = res
+
+    const articles = data.articles
     .filter(list => list.length === 1)
     .map(([article]) => article)
     .filter(article => article.type === 'Article')
@@ -22,12 +25,11 @@ const get = async () => {
       title: article.title.value,
       url: `https://omni.se/a/${article.article_id}`,
       date: new Date(article.changes.published),
-      provider: 'Omni'
+      provider: this.provider
     }))
 
-  return articles
+    return articles
+  }
 }
 
-module.exports = {
-  get
-}
+module.exports = () => new OmniScraper()
