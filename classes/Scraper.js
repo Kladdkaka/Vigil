@@ -1,10 +1,10 @@
 class Scraper {
-  constructor (provider) {
+  constructor(provider) {
     this.provider = provider
     this.axios = require('axios')
   }
 
-  async get () {
+  async get() {
     throw new Error('No get function defined.')
   }
 }

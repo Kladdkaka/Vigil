@@ -6,13 +6,13 @@ const cheerio = require('cheerio')
 const { parseXML } = require('../utils')
 
 class GPScraper extends Scraper {
-  constructor () {
+  constructor() {
     super()
 
     this.provider = 'Göteborgs-Posten'
   }
 
-  async getDateForArticle (url) {
+  async getDateForArticle(url) {
     const res = await this.axios.get(url)
     const $ = cheerio.load(res.data)
 
@@ -22,12 +22,16 @@ class GPScraper extends Scraper {
       throw new Error('Premium article.')
     }
 
-    const dateString = $('time').text().trim()
+    const dateString = $('time')
+      .text()
+      .trim()
 
-    return moment.tz(dateString, 'HH:mm - DD MMM, YYYY', 'Europe/Stockholm').toDate()
+    return moment
+      .tz(dateString, 'HH:mm - DD MMM, YYYY', 'Europe/Stockholm')
+      .toDate()
   }
 
-  async get () {
+  async get() {
     const res = await this.axios.get('http://www.gp.se/?rss')
     const xml = await parseXML(res.data)
 
@@ -35,10 +39,12 @@ class GPScraper extends Scraper {
 
     let articles = []
 
-    for (const item of items) { // Online = paywall? Newspilot = outhouse content? time can be wrong. TT = TT (time could be wrong but probably not a problem), Writer = inhouse
+    for (const item of items) {
+      // Online = paywall? Newspilot = outhouse content? time can be wrong. TT = TT (time could be wrong but probably not a problem), Writer = inhouse
       let date
 
-      if (item.sources && item.sources[0].source[0] === 'Newspilot') { // probably only one writer
+      if (item.sources && item.sources[0].source[0] === 'Newspilot') {
+        // probably only one writer
         console.log(item.link[0])
         date = await this.getDateForArticle(item.link[0])
       }
