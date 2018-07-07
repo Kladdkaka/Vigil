@@ -35,4 +35,4 @@ class OmniScraper extends Scraper {
   }
 }
 
-module.exports = () => new OmniScraper()
+module.exports = new OmniScraper()

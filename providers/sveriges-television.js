@@ -25,4 +25,4 @@ class SVTScraper extends Scraper {
   }
 }
 
-module.exports = () => new SVTScraper()
+module.exports = new SVTScraper()

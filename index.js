@@ -2,7 +2,7 @@ const moment = require('moment')
 
 const providers = require('./providers')
 
-const p = Object.values(providers).map(factory => factory().get())
+const p = Object.values(providers).map(provider => provider.get())
 
 Promise.all(p)
   .then(results => [].concat(...results))

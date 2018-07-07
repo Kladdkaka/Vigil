@@ -34,4 +34,4 @@ class AftonbladetScraper extends Scraper {
   }
 }
 
-module.exports = () => new AftonbladetScraper()
+module.exports = new AftonbladetScraper()

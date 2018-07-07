@@ -61,4 +61,4 @@ class GPScraper extends Scraper {
   }
 }
 
-module.exports = () => new GPScraper()
+module.exports = new GPScraper()
