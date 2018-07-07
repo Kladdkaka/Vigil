@@ -12,10 +12,8 @@
     "url": "https://github.com/Kladdkaka/Vigil/issues"
   },
   "homepage": "https://github.com/Kladdkaka/Vigil#readme",
-  "husky": {
-    "hooks": {
-      "pre-commit": "pretty-quick --staged"
-    }
+  "scripts": {
+    "precommit": "pretty-quick --staged"
   },
   "dependencies": {
     "axios": "^0.17.1",
