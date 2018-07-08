@@ -18,7 +18,7 @@ class Breakit extends Scraper {
     const { data } = res
 
     const articles = data.map(article => ({
-      title: article.name,
+      title: article.name.trim(),
       url: urlJoin('https://www.breakit.se/', article.url),
       date: moment.tz(article.date, 'Europe/Stockholm').toDate(),
       provider: this.provider

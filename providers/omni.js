@@ -25,7 +25,7 @@ class OmniScraper extends Scraper {
       .map(([article]) => article)
       .filter(article => article.type === 'Article')
       .map(article => ({
-        title: article.title.value,
+        title: article.title.value.trim(),
         url: `https://omni.se/a/${article.article_id}`,
         date: new Date(article.changes.published),
         provider: this.provider

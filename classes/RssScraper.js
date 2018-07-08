@@ -21,7 +21,7 @@ class RssScraper extends Scraper {
     const items = xml.rss.channel[0].item
 
     const articles = items.map(item => ({
-      title: item.title[0],
+      title: item.title[0].trim(),
       url: item.link[0],
       date: new Date(item.pubDate[0]),
       provider: this.provider

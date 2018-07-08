@@ -15,7 +15,7 @@ class SVTScraper extends Scraper {
     const { data } = res
 
     const articles = data.latest.content.map(article => ({
-      title: article.title,
+      title: article.title.trim(),
       url: article.teaserURL, // safe? eller ska man ta svt.se domän + article.url?
       date: new Date(article.published),
       provider: this.provider

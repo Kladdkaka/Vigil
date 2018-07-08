@@ -24,7 +24,7 @@ class AftonbladetScraper extends Scraper {
       .reduce((accumlator, items) => [...accumlator, ...items], [])
       .filter(item => item.type === 'teaser')
       .map(teaser => ({
-        title: teaser.title.value,
+        title: teaser.title.value.trim(),
         url: teaser.target.uri, // temp
         date: new Date(teaser.timestamp),
         provider: this.provider

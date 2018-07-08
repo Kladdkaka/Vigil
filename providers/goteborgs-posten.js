@@ -67,7 +67,7 @@ class GPScraper extends Scraper {
       }
 
       articles.push({
-        title: item.title[0],
+        title: item.title[0].trim(),
         url: item.link[0],
         date: date || new Date(item.pubDate[0]),
         provider: this.provider
