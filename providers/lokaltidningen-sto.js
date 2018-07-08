@@ -1,6 +1,6 @@
 const { RssScraper } = require('../classes')
 
 module.exports = new RssScraper(
-  'Blekinge Läns Tidning',
-  'http://www.blt.se/feed'
+  'Lokaltidningen STO',
+  'http://www.lokaltidningensto.se/feed'
 )
